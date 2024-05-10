@@ -22,12 +22,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Composable
-fun FeedScreen(
-    getPostFeed: suspend () -> List<Post>,
-    sendPostInfo: suspend (PostPayload) -> Post,
-    getSongsList: suspend (String) -> List<Track>
-) {
-    var posts = remember { mutableStateListOf<Post>() }
+fun FeedScreen() {
+    /*var posts = remember { mutableStateListOf<Post>() }
     var showDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
@@ -69,7 +65,7 @@ fun FeedScreen(
                 }
             }
         }
-    }
+    }*/
 }
 
 /*

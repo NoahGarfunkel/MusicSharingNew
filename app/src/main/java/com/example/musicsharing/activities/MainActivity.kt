@@ -1,7 +1,6 @@
 package com.example.musicsharing.activities
 
 import android.content.Context
-import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
@@ -24,8 +23,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.musicsharing.classes.Track
 import com.example.musicsharing.constants.SharedPreferencesConstants
-import com.example.musicsharing.displayScreens.FriendsScreen
-import com.example.musicsharing.displayScreens.GreetingsScreen
+import com.example.musicsharing.displayScreens.AccountCreationScreen
 import com.example.musicsharing.displayScreens.FeedScreen
 import com.example.musicsharing.displayScreens.LoginScreen
 import com.example.musicsharing.navigation.Screens
@@ -37,9 +35,8 @@ import com.example.musicsharing.ui.theme.MusicSharingTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
-import profileScreen
 
-class NavigationActivity : ComponentActivity() {
+class MainActivity : ComponentActivity() {
     private val webApi = WebRetrofit().getInstance().create(WebApi::class.java)
     private val accountsRetrofit = AccountsRetrofit()
     private lateinit var sharedPreferences: SharedPreferences
@@ -49,17 +46,35 @@ class NavigationActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         sharedPreferences = getSharedPreferences("login_prefs", Context.MODE_PRIVATE)
-        val spotifyId = sharedPreferences.getString("spotifyId", "")
-        val userName = sharedPreferences.getString("userName", "")
+        //val spotifyId = sharedPreferences.getString("spotifyId", "")
+        //val userName = sharedPreferences.getString("userName", "")
 
         setContent {
             MusicSharingTheme {
                 val navController = rememberNavController()
+                var startScreen = "Login"
+                if (sharedPreferences.getBoolean("KEY_LOGGED_IN", false)){
+                    startScreen = "Feed"
+                }
                 NavHost(navController = navController,
-                    startDestination = "Login"
+                    startDestination = startScreen
                 ) {
                     composable("Login") {
                         LoginScreen()
+                    }
+                    composable("AccountCreation/{code}") { backStackEntry ->
+                        AccountCreationScreen(navController, sharedPreferences, backStackEntry.arguments?.getString("code"))
+                    }
+                    composable("Feed") {
+                        FeedScreen()
+                    }
+                }
+                val uri = intent.data
+                if (uri != null && uri.scheme == "music-sharing" && uri.host == "redirect") {
+                    val path = uri.path
+                    if (path == "/main-activity/account-creation") {
+                        val code = uri.getQueryParameter("code")
+                        navController.navigate("AccountCreation/${code}")
                     }
                 }
             }
