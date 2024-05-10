@@ -42,7 +42,7 @@ import retrofit2.Callback
 import retrofit2.Response
 
 @Composable
-fun AccountCreationScreen(navController: NavController, sharedPreferences: SharedPreferences, code: String?){
+fun AccountCreationScreen(onNavigateToAppNavigation: () -> Unit, sharedPreferences: SharedPreferences, code: String?){
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
@@ -84,7 +84,7 @@ fun AccountCreationScreen(navController: NavController, sharedPreferences: Share
 
                 onClick = {
                     if (code != null) {
-                        getToken(navController, sharedPreferences, code, userName)
+                        getToken(onNavigateToAppNavigation, sharedPreferences, code, userName)
                     } else{
                         Log.e("Submit", "No code found")
                     }},
@@ -96,7 +96,7 @@ fun AccountCreationScreen(navController: NavController, sharedPreferences: Share
     }
 }
 
-fun getToken(navController: NavController, sharedPreferences: SharedPreferences, code: String, userName: String){
+fun getToken(onNavigationToFriendsList: () -> Unit, sharedPreferences: SharedPreferences, code: String, userName: String){
     val clientID = BuildConfig.SPOTIFY_CLIENT_ID
     val clientSecret = BuildConfig.SPOTIFY_CLIENT_SECRET
     val authString = "Basic " + Base64.encodeToString("$clientID:$clientSecret".toByteArray(), Base64.NO_WRAP)
@@ -112,7 +112,7 @@ fun getToken(navController: NavController, sharedPreferences: SharedPreferences,
                 sharedPreferences.edit().putString(SharedPreferencesConstants.KEY_TOKEN, token).apply()
                 sharedPreferences.edit().putString(SharedPreferencesConstants.KEY_REFRESH_TOKEN, refreshToken).apply()
 
-                saveUserInfo(navController, sharedPreferences, token, userName)
+                saveUserInfo(onNavigationToFriendsList, sharedPreferences, token, userName)
             } else {
                 Log.e("getToken", "API call failed with code: ${response.errorBody()?.string()}")
             }
@@ -123,7 +123,7 @@ fun getToken(navController: NavController, sharedPreferences: SharedPreferences,
         }
     })
 }
-fun saveUserInfo(navController: NavController, sharedPreferences: SharedPreferences, token: String, userName: String){
+fun saveUserInfo(onNavigateToAppNavigation: () -> Unit, sharedPreferences: SharedPreferences, token: String, userName: String){
     val webApi = WebRetrofit().getInstance().create(WebApi::class.java)
     val userCall = webApi.getUser("Bearer $token")
 
@@ -136,7 +136,7 @@ fun saveUserInfo(navController: NavController, sharedPreferences: SharedPreferen
                     sharedPreferences.edit().putBoolean(SharedPreferencesConstants.KEY_LOGGED_IN, true).apply()
                     sharedPreferences.edit().putString(SharedPreferencesConstants.KEY_SPOTIFY_ID, spotifyID).apply()
                     sharedPreferences.edit().putString(SharedPreferencesConstants.KEY_USER_NAME, userName).apply()
-                    navController.navigate("Feed")
+                    onNavigateToAppNavigation()
                 }
             } else {
                 Log.e("saveUserInfo", "API call failed with code: ${response.code()}")
