@@ -22,7 +22,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Composable
-fun SocialMediaPostScreen(
+fun FeedScreen(
     getPostFeed: suspend () -> List<Post>,
     sendPostInfo: suspend (PostPayload) -> Post,
     getSongsList: suspend (String) -> List<Track>

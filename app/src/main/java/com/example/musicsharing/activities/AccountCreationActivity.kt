@@ -58,7 +58,6 @@ class AccountCreationActivity : ComponentActivity() {
     private var code: String? = null
     private val accountsApi = AccountsRetrofit().getInstance().create(AccountsApi::class.java)
     private val webApi = WebRetrofit().getInstance().create(WebApi::class.java)
-    private val backendApi = BackendRetrofit().getInstance().create(BackendApi::class.java)
     private val currentActivity = this
     private lateinit var sharedPreferences: SharedPreferences
 
@@ -166,31 +165,11 @@ class AccountCreationActivity : ComponentActivity() {
                 if (response.isSuccessful) {
                     val jsonObject = JSONObject(response.body()!!.string())
                     val spotifyID = jsonObject.optString("id")
-                    val userInfo = UserInfoPayload(spotifyID, userName)
                     if (response.body() != null) {
-                        backendApi.saveUserInfo(userInfo).enqueue(object : Callback<ResponseBody> {
-                            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                                if (response.isSuccessful) {
-                                    sharedPreferences.edit().putBoolean(SharedPreferencesConstants.KEY_LOGGED_IN, true).apply()
-                                    sharedPreferences.edit().putString(SharedPreferencesConstants.KEY_SPOTIFY_ID, spotifyID).apply()
-                                    sharedPreferences.edit().putString(SharedPreferencesConstants.KEY_USER_NAME, userName).apply()
-                                    setUserId(spotifyID)
-                                    startActivity(Intent(currentActivity, NavigationActivity::class.java))
-
-                                } else {
-                                    Log.e("Response", "saveUserInfo request failed with code: ${response.errorBody()?.string()}")
-
-                                }
-                            }
-
-                            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                                sharedPreferences.edit().putBoolean(SharedPreferencesConstants.KEY_LOGGED_IN, true).apply()
-                                sharedPreferences.edit().putString(SharedPreferencesConstants.KEY_SPOTIFY_ID, spotifyID).apply()
-                                setUserId(spotifyID)
-                                startActivity(Intent(currentActivity, NavigationActivity::class.java))
-                                Log.e("saveUserInfo", "saveUserInfo request failed: ${t.message}")
-                            }
-                        })
+                        sharedPreferences.edit().putBoolean(SharedPreferencesConstants.KEY_LOGGED_IN, true).apply()
+                        sharedPreferences.edit().putString(SharedPreferencesConstants.KEY_SPOTIFY_ID, spotifyID).apply()
+                        sharedPreferences.edit().putString(SharedPreferencesConstants.KEY_USER_NAME, userName).apply()
+                        startActivity(Intent(currentActivity, NavigationActivity::class.java))
                     }
                 } else {
                     Log.e("saveUserInfo", "API call failed with code: ${response.code()}")
@@ -199,24 +178,6 @@ class AccountCreationActivity : ComponentActivity() {
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                 Log.e("saveUserInfo", "API call failed with exception: ${t.message}")
-            }
-        })
-    }
-
-    private fun setUserId(spotifyId: String) {
-        backendApi.getUser(spotifyId).enqueue(object : Callback<User> {
-            override fun onResponse(call: Call<User>, response: Response<User>) {
-                if (response.isSuccessful && response.body() != null && response.body()!!.id != 0) {
-                    val userId = response.body()!!.id
-                    sharedPreferences.edit().putInt(SharedPreferencesConstants.KEY_USER_ID, userId).apply()
-                    Log.d("getUserResponse", "getUser responded with ${response.body()!!.id}")
-                } else {
-                    Log.e("Response", "getUser request failed with code: ${response.errorBody()?.string()}")
-                }
-            }
-            override fun onFailure(call: Call<User>, t: Throwable) {
-                sharedPreferences.edit().putInt(SharedPreferencesConstants.KEY_USER_ID, 0).apply()
-                Log.e("getUser", "getUser request failed: ${t.message}")
             }
         })
     }

@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -18,6 +20,24 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        val keystoreFile = project.rootProject.file("secrets.properties")
+        val properties = Properties()
+        properties.load(keystoreFile.inputStream())
+
+        val spotifyClientID = properties.getProperty("SPOTIFY_CLIENT_ID") ?: ""
+        buildConfigField(
+            type = "String",
+            name = "SPOTIFY_CLIENT_ID",
+            value = spotifyClientID
+        )
+
+        val spotifyClientSecret = properties.getProperty("SPOTIFY_CLIENT_SECRET") ?: ""
+        buildConfigField(
+            type = "String",
+            name = "SPOTIFY_CLIENT_SECRET",
+            value = spotifyClientSecret
+        )
     }
 
     buildTypes {
@@ -38,6 +58,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.4.3"
