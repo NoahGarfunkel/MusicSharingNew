@@ -1,20 +1,56 @@
 package com.example.musicsharing.displayScreens
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavDestination
+import com.example.musicsharing.classes.Post
+import com.example.musicsharing.navigation.Screens
+import com.example.musicsharing.navigation.listOfNavItems
 
 @Composable
-fun PostsScreen() {
-    /*var posts = remember { mutableStateListOf<Post>() }
+fun PostsScreen(currentDestination: NavDestination?, navigationFunction: (String) -> Unit) {
+    var posts = remember { mutableStateListOf<Post>() }
     var showDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        val data = getPostFeed()
+        val data = posts
         posts.addAll(data)
     }
-    Column(
+    Scaffold(
+        bottomBar = {
+            NavigationBar {
+                listOfNavItems.forEach { navItem ->
+                    NavigationBarItem(
+                        selected = navItem.route == Screens.PostsScreen.name,
+                        onClick = { navigationFunction(navItem.route) },
+                        icon = {
+                            Icon(
+                                imageVector = navItem.icon,
+                                contentDescription = null
+                            )
+                        },
+                        label = {
+                            Text(text = navItem.label)
+                        }
+                    )
+                }
+            }
+        }
+    ){paddingValues -> Column(
         modifier = Modifier
             .fillMaxSize()
             .background(color = Color(0xFFFFF3E8))
+            .padding(paddingValues)
 
     ) {
         LazyColumn(modifier = Modifier.weight(1f)) {
@@ -33,8 +69,9 @@ fun PostsScreen() {
             ) {
                 Icon(Icons.Filled.Add, contentDescription = "Add")
             }
-        }
-        if (showDialog) {
+        }}
+
+        /*if (showDialog) {
             PostCreationDialog(setShowDialog = {
                 showDialog = it
             }, getSongsList) {
@@ -45,8 +82,8 @@ fun PostsScreen() {
                     }
                 }
             }
-        }
-    }*/
+        }*/
+    }
 }
 
 /*

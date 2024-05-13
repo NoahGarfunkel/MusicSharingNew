@@ -135,7 +135,7 @@ fun saveUserInfo(onNavigateToAppNavigation: () -> Unit, sharedPreferences: Share
                 if (response.body() != null) {
                     sharedPreferences.edit().putBoolean(SharedPreferencesConstants.KEY_LOGGED_IN, true).apply()
                     sharedPreferences.edit().putString(SharedPreferencesConstants.KEY_SPOTIFY_ID, spotifyID).apply()
-                    sharedPreferences.edit().putString(SharedPreferencesConstants.KEY_USER_NAME, userName).apply()
+                    sharedPreferences.edit().putString(SharedPreferencesConstants.KEY_USERNAME, userName).apply()
                     onNavigateToAppNavigation()
                 }
             } else {

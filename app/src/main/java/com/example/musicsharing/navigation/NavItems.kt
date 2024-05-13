@@ -14,11 +14,6 @@ data class NavItems(
 
 val listOfNavItems = listOf(
     NavItems(
-        label = "Home",
-        icon = Icons.Default.Home,
-        route = Screens.GreetingsScreen.name
-    ),
-    NavItems(
         label = "Posts",
         icon = Icons.Default.Add,
         route = Screens.PostsScreen.name
@@ -28,9 +23,9 @@ val listOfNavItems = listOf(
         icon = Icons.Default.Person,
         route = Screens.ProfileScreen.name
     ),
-    NavItems(
+    /*NavItems(
         label ="Add Friends",
         icon = Icons.Default.Add,
         route = Screens.FriendsScreen.name
-    )
+    )*/
 )
