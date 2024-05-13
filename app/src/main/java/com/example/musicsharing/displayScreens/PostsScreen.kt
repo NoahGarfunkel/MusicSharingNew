@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination
-import com.example.musicsharing.classes.Post
+import com.example.musicsharing.models.Post
 import com.example.musicsharing.navigation.Screens
 import com.example.musicsharing.navigation.listOfNavItems
 

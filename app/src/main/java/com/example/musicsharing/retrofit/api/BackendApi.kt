@@ -1,16 +1,15 @@
 package com.example.musicsharing.retrofit.api
 
-import com.example.musicsharing.classes.CommentPayload
-import com.example.musicsharing.classes.PostPayload
-import com.example.musicsharing.classes.FollowPayload
-import com.example.musicsharing.classes.Post
-import com.example.musicsharing.classes.User
-import com.example.musicsharing.classes.UserInfoPayload
+import com.example.musicsharing.models.CommentPayload
+import com.example.musicsharing.models.PostPayload
+import com.example.musicsharing.models.FollowPayload
+import com.example.musicsharing.models.Post
+import com.example.musicsharing.models.User
+import com.example.musicsharing.models.UserInfoPayload
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
-import retrofit2.http.Headers
 import retrofit2.http.POST
 import retrofit2.http.Path
 

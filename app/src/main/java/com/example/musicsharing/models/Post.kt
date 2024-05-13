@@ -1,4 +1,4 @@
-package com.example.musicsharing.classes
+package com.example.musicsharing.models
 
 import java.time.LocalDateTime
 

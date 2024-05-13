@@ -41,8 +41,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.window.PopupProperties
-import com.example.musicsharing.classes.PostPayload
-import com.example.musicsharing.classes.Track
+import com.example.musicsharing.models.PostPayload
+import com.example.musicsharing.models.Track
 
 @Composable
 fun PostCreationDialog(setShowDialog: (Boolean) -> Unit,getSongsList: suspend (String) -> List<Track>, createPostInfo: (PostPayload) -> Unit ) {

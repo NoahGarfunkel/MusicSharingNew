@@ -1,4 +1,4 @@
-package com.example.musicsharing.classes
+package com.example.musicsharing.models
 
 data class User(
     val id: Int,

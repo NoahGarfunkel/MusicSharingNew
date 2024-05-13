@@ -24,12 +24,15 @@ import com.example.musicsharing.R
 import com.example.musicsharing.modals.LogoutDialog
 import com.example.musicsharing.navigation.Screens
 import com.example.musicsharing.navigation.listOfNavItems
+import com.example.musicsharing.sharedPreferences.AppSharedPreferences
 
 
 @Composable
-fun ProfileScreen(username: String?, spotifyId: String?, navigationFunction: (String) -> Unit) {
+fun ProfileScreen(navigationFunction: (String) -> Unit) {
 
     var showDialog by remember { mutableStateOf(false) }
+    var username = AppSharedPreferences.getUserName()
+    var spotifyID = AppSharedPreferences.getSpotifyID()
 
     Scaffold(
         bottomBar = {
@@ -119,9 +122,9 @@ fun ProfileScreen(username: String?, spotifyId: String?, navigationFunction: (St
                     color = Color.White
                 )
 
-                if (spotifyId != null) {
+                if (spotifyID != null) {
                     Text(
-                        text = spotifyId,
+                        text = spotifyID,
                         style = MaterialTheme.typography.bodyLarge,
                         fontSize = 19.sp,
                         color = Color(0xFFFBFFDC),

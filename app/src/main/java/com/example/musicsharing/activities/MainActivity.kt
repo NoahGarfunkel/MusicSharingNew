@@ -13,15 +13,17 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
-import com.example.musicsharing.classes.Track
+import com.example.musicsharing.models.Track
 import com.example.musicsharing.constants.SharedPreferencesConstants
 import com.example.musicsharing.displayScreens.AccountCreationScreen
 import com.example.musicsharing.displayScreens.LoginScreen
 import com.example.musicsharing.displayScreens.PostsScreen
+import com.example.musicsharing.navigation.MainAppNavigation
 import com.example.musicsharing.navigation.Screens
 import com.example.musicsharing.retrofit.AccountsRetrofit
 import com.example.musicsharing.retrofit.WebRetrofit
 import com.example.musicsharing.retrofit.api.WebApi
+import com.example.musicsharing.sharedPreferences.AppSharedPreferences
 import com.example.musicsharing.ui.theme.MusicSharingTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -30,76 +32,31 @@ import org.json.JSONObject
 class MainActivity : ComponentActivity() {
     private val webApi = WebRetrofit().getInstance().create(WebApi::class.java)
     private val accountsRetrofit = AccountsRetrofit()
-    private lateinit var sharedPreferences: SharedPreferences
-    private val context = this
+    private val appSharedPreferences = AppSharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        sharedPreferences = getSharedPreferences("login_prefs", Context.MODE_PRIVATE)
-
         setContent {
             MusicSharingTheme {
-                MainAppNavigation()
-            }
-        }
-    }
-
-    @Composable
-    fun MainAppNavigation() {
-        val navController = rememberNavController()
-
-        var startScreen = "LoginNavigation"
-        if (sharedPreferences.getBoolean("isLoggedIn", false)){
-            startScreen = "PostsScreen"
-        }
-
-        NavHost(navController = navController, startDestination = startScreen,) {
-            composable(route = Screens.PostsScreen.name) {
-                val navBackStackEntry = navController.currentBackStackEntryAsState()
-                val currentDestination = navBackStackEntry.value?.destination
-                PostsScreen(currentDestination, navigationFunction = { route -> navController.navigate(route)})
-            }
-            composable(route = Screens.ProfileScreen.name) {
-                ProfileScreen(sharedPreferences.getString("username", ""),
-                    sharedPreferences.getString("spotifyId", ""),
-                    navigationFunction = { route -> navController.navigate(route)})
-            }
-            composable(route = Screens.FriendsScreen.name) {
-                //FriendsScreen()
-            }
-            navigation(startDestination = "Login", route = "LoginNavigation") {
-                composable("Login") {
-                    LoginScreen()
-                    val uri = intent.data
-                    if (uri != null && uri.scheme == "music-sharing" && uri.host == "redirect") {
-                        val path = uri.path
-                        if (path == "/main-activity/account-creation") {
-                            val code = uri.getQueryParameter("code")
-                            navController.navigate("AccountCreation/${code}")
-                        }
+                var startScreen = "LoginNavigation"
+                val uri = intent.data
+                if (uri != null && uri.scheme == "music-sharing" && uri.host == "redirect") {
+                    val path = uri.path
+                    if (path == "/main-activity/account-creation") {
+                        val code = uri.getQueryParameter("code")
+                        startScreen = ("AccountCreation/${code}")
                     }
                 }
-                composable("AccountCreation/{code}") { backStackEntry ->
-                    AccountCreationScreen(
-                        onNavigateToAppNavigation = { navController.navigate("PostsScreen") },
-                        sharedPreferences,
-                        backStackEntry.arguments?.getString("code")
-                    )
+                if (appSharedPreferences.getIsLoggedIn()) {
+                    startScreen = "PostsScreen"
                 }
+                MainAppNavigation(startScreen)
             }
         }
     }
 
-    private fun signOut(){
-        sharedPreferences.edit().putBoolean(SharedPreferencesConstants.KEY_LOGGED_IN, false).apply()
-        sharedPreferences.edit().remove(SharedPreferencesConstants.KEY_SPOTIFY_ID).apply()
-        sharedPreferences.edit().remove(SharedPreferencesConstants.KEY_TOKEN).apply()
-        sharedPreferences.edit().remove(SharedPreferencesConstants.KEY_USERNAME).apply()
-        //startActivity(Intent(this, LoginActivity::class.java))
-    }
-
-    private suspend fun getSongsList(input: String): List<Track> {
+        /*private suspend fun getSongsList(input: String): List<Track> {
         val tracksList = mutableListOf<Track>()
         val token = sharedPreferences.getString(SharedPreferencesConstants.KEY_TOKEN, "")
         return withContext(Dispatchers.IO) {
@@ -130,5 +87,5 @@ class MainActivity : ComponentActivity() {
                 emptyList<Track>()
             }
         }
-    }
+    }*/
 }

@@ -1,6 +1,5 @@
 package com.example.musicsharing.displayScreens
 
-import android.content.SharedPreferences
 import android.util.Base64
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
@@ -29,11 +28,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.example.musicsharing.BuildConfig
-import com.example.musicsharing.constants.SharedPreferencesConstants
 import com.example.musicsharing.retrofit.AccountsRetrofit
 import com.example.musicsharing.retrofit.WebRetrofit
 import com.example.musicsharing.retrofit.api.AccountsApi
 import com.example.musicsharing.retrofit.api.WebApi
+import com.example.musicsharing.sharedPreferences.AppSharedPreferences
 import okhttp3.ResponseBody
 import org.json.JSONObject
 import retrofit2.Call
@@ -41,7 +40,7 @@ import retrofit2.Callback
 import retrofit2.Response
 
 @Composable
-fun AccountCreationScreen(onNavigateToAppNavigation: () -> Unit, sharedPreferences: SharedPreferences, code: String?){
+fun AccountCreationScreen(onNavigateToAppNavigation: () -> Unit, code: String?){
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
@@ -83,7 +82,7 @@ fun AccountCreationScreen(onNavigateToAppNavigation: () -> Unit, sharedPreferenc
 
                 onClick = {
                     if (code != null) {
-                        getToken(onNavigateToAppNavigation, sharedPreferences, code, userName)
+                        getToken(onNavigateToAppNavigation, code, userName)
                     } else{
                         Log.e("Submit", "No code found")
                     }},
@@ -95,7 +94,7 @@ fun AccountCreationScreen(onNavigateToAppNavigation: () -> Unit, sharedPreferenc
     }
 }
 
-fun getToken(onNavigationToFriendsList: () -> Unit, sharedPreferences: SharedPreferences, code: String, userName: String){
+fun getToken(onNavigationToFriendsList: () -> Unit, code: String, username: String){
     val clientID = BuildConfig.SPOTIFY_CLIENT_ID
     val clientSecret = BuildConfig.SPOTIFY_CLIENT_SECRET
     val authString = "Basic " + Base64.encodeToString("$clientID:$clientSecret".toByteArray(), Base64.NO_WRAP)
@@ -108,10 +107,9 @@ fun getToken(onNavigationToFriendsList: () -> Unit, sharedPreferences: SharedPre
                 val responseJSON = JSONObject(response.body()!!.string())
                 val token = responseJSON.getString("access_token")
                 val refreshToken = responseJSON.getString("refresh_token")
-                sharedPreferences.edit().putString(SharedPreferencesConstants.KEY_TOKEN, token).apply()
-                sharedPreferences.edit().putString(SharedPreferencesConstants.KEY_REFRESH_TOKEN, refreshToken).apply()
+                AppSharedPreferences.editTokens(token, refreshToken)
 
-                saveUserInfo(onNavigationToFriendsList, sharedPreferences, token, userName)
+                saveUserInfo(onNavigationToFriendsList, token, username)
             } else {
                 Log.e("getToken", "API call failed with code: ${response.errorBody()?.string()}")
             }
@@ -122,7 +120,7 @@ fun getToken(onNavigationToFriendsList: () -> Unit, sharedPreferences: SharedPre
         }
     })
 }
-fun saveUserInfo(onNavigateToAppNavigation: () -> Unit, sharedPreferences: SharedPreferences, token: String, userName: String){
+fun saveUserInfo(onNavigateToAppNavigation: () -> Unit, token: String, username: String){
     val webApi = WebRetrofit().getInstance().create(WebApi::class.java)
     val userCall = webApi.getUser("Bearer $token")
 
@@ -132,9 +130,7 @@ fun saveUserInfo(onNavigateToAppNavigation: () -> Unit, sharedPreferences: Share
                 val jsonObject = JSONObject(response.body()!!.string())
                 val spotifyID = jsonObject.optString("id")
                 if (response.body() != null) {
-                    sharedPreferences.edit().putBoolean(SharedPreferencesConstants.KEY_LOGGED_IN, true).apply()
-                    sharedPreferences.edit().putString(SharedPreferencesConstants.KEY_SPOTIFY_ID, spotifyID).apply()
-                    sharedPreferences.edit().putString(SharedPreferencesConstants.KEY_USERNAME, userName).apply()
+                    AppSharedPreferences.addNewUserInfo(spotifyID,username)
                     onNavigateToAppNavigation()
                 }
             } else {
