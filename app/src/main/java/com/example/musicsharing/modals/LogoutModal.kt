@@ -1,7 +1,5 @@
 package com.example.musicsharing.modals
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -31,22 +29,20 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import androidx.navigation.compose.rememberNavController
+import com.example.musicsharing.sharedPreferences.SharedPreferencesApi
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun LogoutDialog(signOut: () -> Unit) {
-    var showDialog by remember { mutableStateOf(true) } // Control the visibility of the dialog
+fun LogoutDialog(onNavigateToRoute: (String) -> Unit) {
+    var showDialog by remember { mutableStateOf(true) }
 
     if (showDialog) {
-        val navController = rememberNavController()
-        Dialog(onDismissRequest = { showDialog = false }) { // Close the dialog when the user clicks outside of it
+        Dialog(onDismissRequest = { showDialog = false }) {
             Card(
                 modifier = Modifier
                     .padding(8.dp)
                     .clip(RoundedCornerShape(10.dp))
                     .background(Color.White)
-                    .fillMaxWidth()// Makes the card take up the full width of its parent
+                    .fillMaxWidth()
                     .height(150.dp),
                 elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
 
@@ -81,12 +77,12 @@ fun LogoutDialog(signOut: () -> Unit) {
                             .fillMaxWidth()
                             .padding(bottom = 8.dp)
                             .drawWithContent {
-                                drawContent() // Draw the original content of the Row
+                                drawContent()
                                 drawLine(
-                                    color = (Color(0xFF00889A)), // Set the color of the border
-                                    strokeWidth = 1.dp.toPx(), // Set the thickness of the border
-                                    start = Offset(x = 0f, y = 0f), // Start from the top left corner
-                                    end = Offset(x = size.width, y = 0f) // Draw to the top right corner
+                                    color = (Color(0xFF00889A)),
+                                    strokeWidth = 1.dp.toPx(),
+                                    start = Offset(x = 0f, y = 0f),
+                                    end = Offset(x = size.width, y = 0f)
                                 )
                             },
 
@@ -95,7 +91,8 @@ fun LogoutDialog(signOut: () -> Unit) {
                         Button(
                             colors = ButtonDefaults.buttonColors(Color(0xFF309CA9)),
                             onClick = {
-                                signOut()
+                                SharedPreferencesApi.signOut()
+                                onNavigateToRoute("LoginNavigation")
                                 showDialog = false
                                       },
                             modifier = Modifier

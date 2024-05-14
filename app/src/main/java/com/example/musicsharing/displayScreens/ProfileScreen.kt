@@ -24,15 +24,15 @@ import com.example.musicsharing.R
 import com.example.musicsharing.modals.LogoutDialog
 import com.example.musicsharing.navigation.Screens
 import com.example.musicsharing.navigation.listOfNavItems
-import com.example.musicsharing.sharedPreferences.AppSharedPreferences
+import com.example.musicsharing.sharedPreferences.SharedPreferencesApi
 
 
 @Composable
-fun ProfileScreen(navigationFunction: (String) -> Unit) {
+fun ProfileScreen(onNavigateToRoute: (String) -> Unit) {
 
     var showDialog by remember { mutableStateOf(false) }
-    var username = AppSharedPreferences.getUserName()
-    var spotifyID = AppSharedPreferences.getSpotifyID()
+    var username = SharedPreferencesApi.getUserName()
+    var spotifyID = SharedPreferencesApi.getSpotifyID()
 
     Scaffold(
         bottomBar = {
@@ -40,7 +40,7 @@ fun ProfileScreen(navigationFunction: (String) -> Unit) {
                 listOfNavItems.forEach { navItem ->
                     NavigationBarItem(
                         selected = navItem.route == Screens.ProfileScreen.name,
-                        onClick = { navigationFunction(navItem.route) },
+                        onClick = { onNavigateToRoute(navItem.route) },
                         icon = {
                             Icon(
                                 imageVector = navItem.icon,
@@ -155,7 +155,7 @@ fun ProfileScreen(navigationFunction: (String) -> Unit) {
                         )
                 }
                 if (showDialog) {
-                    //LogoutDialog(signOut)
+                    LogoutDialog(onNavigateToRoute)
                 }
             }
         }

@@ -1,30 +1,37 @@
 package com.example.musicsharing.navigation
 
 import ProfileScreen
+import android.net.Uri
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import com.example.musicsharing.displayScreens.AccountCreationScreen
 import com.example.musicsharing.displayScreens.LoginScreen
 import com.example.musicsharing.displayScreens.PostsScreen
+import com.example.musicsharing.sharedPreferences.SharedPreferencesApi
 
 @Composable
-fun MainAppNavigation(startScreen: String) {
-    val navController = rememberNavController()
+fun AppNavigation(
+    uri: Uri?,
+    navController: NavHostController = rememberNavController()
+    ) {
+    var startDestination = "LoginNavigation"
+    if (SharedPreferencesApi.getIsLoggedIn()) {
+        startDestination = "PostsScreen"
+    }
 
-    NavHost(navController = navController, startDestination = startScreen,) {
+    NavHost(
+        navController = navController,
+        startDestination = startDestination
+    ) {
         composable(route = Screens.PostsScreen.name) {
-            val navBackStackEntry = navController.currentBackStackEntryAsState()
-            val currentDestination = navBackStackEntry.value?.destination
-            PostsScreen(
-                currentDestination,
-                navigationFunction = { route -> navController.navigate(route) })
+            PostsScreen(onNavigateToRoute = { route -> navController.navigate(route) })
         }
         composable(route = Screens.ProfileScreen.name) {
-            ProfileScreen(navigationFunction = { route -> navController.navigate(route) })
+            ProfileScreen(onNavigateToRoute = { route -> navController.navigate(route) })
         }
         composable(route = Screens.FriendsScreen.name) {
             //FriendsScreen()
@@ -32,10 +39,16 @@ fun MainAppNavigation(startScreen: String) {
         navigation(startDestination = "Login", route = "LoginNavigation") {
             composable("Login") {
                 LoginScreen()
+                if (uri != null && uri.scheme == "music-sharing" && uri.host == "redirect" && uri.path == "/main-activity/account-creation") {
+                    val code = uri.getQueryParameter("code")?.let { "$it" }
+                    if (code != null){
+                        navController.navigate("AccountCreation/${code}")
+                    }
+                }
             }
             composable("AccountCreation/{code}") { backStackEntry ->
                 AccountCreationScreen(
-                    onNavigateToAppNavigation = { navController.navigate("PostsScreen") },
+                    onNavigateToPosts = { navController.navigate("PostsScreen") },
                     backStackEntry.arguments?.getString("code")
                 )
             }

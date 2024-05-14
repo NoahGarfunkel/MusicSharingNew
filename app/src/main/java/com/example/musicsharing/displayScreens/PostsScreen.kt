@@ -12,13 +12,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavDestination
 import com.example.musicsharing.models.Post
 import com.example.musicsharing.navigation.Screens
 import com.example.musicsharing.navigation.listOfNavItems
 
 @Composable
-fun PostsScreen(currentDestination: NavDestination?, navigationFunction: (String) -> Unit) {
+fun PostsScreen(onNavigateToRoute: (String) -> Unit) {
     var posts = remember { mutableStateListOf<Post>() }
     var showDialog by remember { mutableStateOf(false) }
 
@@ -32,7 +31,7 @@ fun PostsScreen(currentDestination: NavDestination?, navigationFunction: (String
                 listOfNavItems.forEach { navItem ->
                     NavigationBarItem(
                         selected = navItem.route == Screens.PostsScreen.name,
-                        onClick = { navigationFunction(navItem.route) },
+                        onClick = { onNavigateToRoute(navItem.route) },
                         icon = {
                             Icon(
                                 imageVector = navItem.icon,

@@ -1,57 +1,18 @@
 package com.example.musicsharing.activities
 
-import ProfileScreen
-import android.content.Context
-import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.runtime.Composable
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navigation
-import com.example.musicsharing.models.Track
-import com.example.musicsharing.constants.SharedPreferencesConstants
-import com.example.musicsharing.displayScreens.AccountCreationScreen
-import com.example.musicsharing.displayScreens.LoginScreen
-import com.example.musicsharing.displayScreens.PostsScreen
-import com.example.musicsharing.navigation.MainAppNavigation
-import com.example.musicsharing.navigation.Screens
-import com.example.musicsharing.retrofit.AccountsRetrofit
-import com.example.musicsharing.retrofit.WebRetrofit
-import com.example.musicsharing.retrofit.api.WebApi
-import com.example.musicsharing.sharedPreferences.AppSharedPreferences
+import com.example.musicsharing.navigation.AppNavigation
 import com.example.musicsharing.ui.theme.MusicSharingTheme
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import org.json.JSONObject
 
 class MainActivity : ComponentActivity() {
-    private val webApi = WebRetrofit().getInstance().create(WebApi::class.java)
-    private val accountsRetrofit = AccountsRetrofit()
-    private val appSharedPreferences = AppSharedPreferences
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
             MusicSharingTheme {
-                var startScreen = "LoginNavigation"
-                val uri = intent.data
-                if (uri != null && uri.scheme == "music-sharing" && uri.host == "redirect") {
-                    val path = uri.path
-                    if (path == "/main-activity/account-creation") {
-                        val code = uri.getQueryParameter("code")
-                        startScreen = ("AccountCreation/${code}")
-                    }
-                }
-                if (appSharedPreferences.getIsLoggedIn()) {
-                    startScreen = "PostsScreen"
-                }
-                MainAppNavigation(startScreen)
+                AppNavigation(intent.data)
             }
         }
     }

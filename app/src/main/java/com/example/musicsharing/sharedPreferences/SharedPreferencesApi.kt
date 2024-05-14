@@ -5,7 +5,7 @@ import com.example.musicsharing.constants.SharedPreferencesConstants
 import android.content.Context
 import com.example.musicsharing.MusicSharing
 
-object AppSharedPreferences {
+object SharedPreferencesApi {
     private val sharedPreferences: SharedPreferences = MusicSharing.instance.getSharedPreferences("login_prefs", Context.MODE_PRIVATE)
 
     fun getIsLoggedIn(): Boolean {

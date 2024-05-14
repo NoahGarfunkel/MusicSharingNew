@@ -32,7 +32,7 @@ import com.example.musicsharing.retrofit.AccountsRetrofit
 import com.example.musicsharing.retrofit.WebRetrofit
 import com.example.musicsharing.retrofit.api.AccountsApi
 import com.example.musicsharing.retrofit.api.WebApi
-import com.example.musicsharing.sharedPreferences.AppSharedPreferences
+import com.example.musicsharing.sharedPreferences.SharedPreferencesApi
 import okhttp3.ResponseBody
 import org.json.JSONObject
 import retrofit2.Call
@@ -40,7 +40,7 @@ import retrofit2.Callback
 import retrofit2.Response
 
 @Composable
-fun AccountCreationScreen(onNavigateToAppNavigation: () -> Unit, code: String?){
+fun AccountCreationScreen(onNavigateToPosts: () -> Unit, code: String?){
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
@@ -82,7 +82,7 @@ fun AccountCreationScreen(onNavigateToAppNavigation: () -> Unit, code: String?){
 
                 onClick = {
                     if (code != null) {
-                        getToken(onNavigateToAppNavigation, code, userName)
+                        getToken(onNavigateToPosts, code, userName)
                     } else{
                         Log.e("Submit", "No code found")
                     }},
@@ -107,7 +107,7 @@ fun getToken(onNavigationToFriendsList: () -> Unit, code: String, username: Stri
                 val responseJSON = JSONObject(response.body()!!.string())
                 val token = responseJSON.getString("access_token")
                 val refreshToken = responseJSON.getString("refresh_token")
-                AppSharedPreferences.editTokens(token, refreshToken)
+                SharedPreferencesApi.editTokens(token, refreshToken)
 
                 saveUserInfo(onNavigationToFriendsList, token, username)
             } else {
@@ -130,7 +130,7 @@ fun saveUserInfo(onNavigateToAppNavigation: () -> Unit, token: String, username:
                 val jsonObject = JSONObject(response.body()!!.string())
                 val spotifyID = jsonObject.optString("id")
                 if (response.body() != null) {
-                    AppSharedPreferences.addNewUserInfo(spotifyID,username)
+                    SharedPreferencesApi.addNewUserInfo(spotifyID,username)
                     onNavigateToAppNavigation()
                 }
             } else {
