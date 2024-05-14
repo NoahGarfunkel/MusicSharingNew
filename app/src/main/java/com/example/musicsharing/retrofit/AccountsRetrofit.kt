@@ -13,8 +13,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import PropertiesReader
-import android.content.Context
+import com.example.musicsharing.BuildConfig
 
 class AccountsRetrofit() {
 
@@ -34,10 +33,9 @@ class AccountsRetrofit() {
             .build()
     }
 
-    fun updateToken(sharedPreferences: SharedPreferences, context: Context){
-        PropertiesReader.init(context)
-        val clientID = PropertiesReader.getProperty("SPOTIFY_CLIENT_ID")
-        val clientSecret = PropertiesReader.getProperty("SPOTIFY_CLIENT_SECRET")
+    fun updateToken(sharedPreferences: SharedPreferences){
+        val clientID = BuildConfig.SPOTIFY_CLIENT_ID
+        val clientSecret = BuildConfig.SPOTIFY_CLIENT_SECRET
 
         val refreshToken = sharedPreferences.getString(SharedPreferencesConstants.KEY_REFRESH_TOKEN, "")
         val authString = "Basic " + Base64.encodeToString("$clientID:$clientSecret".toByteArray(), Base64.NO_WRAP)

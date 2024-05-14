@@ -1,4 +1,4 @@
-package com.example.musicsharing.classes
+package com.example.musicsharing.models
 
 data class Track(
     val id: String,

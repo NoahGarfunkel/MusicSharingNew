@@ -1,4 +1,3 @@
-import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
@@ -23,134 +22,142 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.sp
 import com.example.musicsharing.R
 import com.example.musicsharing.modals.LogoutDialog
+import com.example.musicsharing.navigation.Screens
+import com.example.musicsharing.navigation.listOfNavItems
+import com.example.musicsharing.sharedPreferences.SharedPreferencesApi
 
 
 @Composable
-fun profileScreen(signOut: () -> Unit, spotifyId: String?, userName: String?) {
+fun ProfileScreen(onNavigateToRoute: (String) -> Unit) {
 
     var showDialog by remember { mutableStateOf(false) }
+    var username = SharedPreferencesApi.getUserName()
+    var spotifyID = SharedPreferencesApi.getSpotifyID()
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-          .background(color = Color(0xFFFFF3E8))
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        //EDIT BUTTON
-        Row(
+    Scaffold(
+        bottomBar = {
+            NavigationBar {
+                listOfNavItems.forEach { navItem ->
+                    NavigationBarItem(
+                        selected = navItem.route == Screens.ProfileScreen.name,
+                        onClick = { onNavigateToRoute(navItem.route) },
+                        icon = {
+                            Icon(
+                                imageVector = navItem.icon,
+                                contentDescription = null
+                            )
+                        },
+                        label = {
+                            Text(text = navItem.label)
+                        }
+                    )
+                }
+            }
+        }
+    ) { paddingValues ->
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-            horizontalArrangement = Arrangement.End
-
+                .fillMaxSize()
+                .background(color = Color(0xFFFFF3E8))
+                .padding(paddingValues),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            IconButton(
-                onClick = {
-                          /* ADD EDIT FUNCTIONALITY HERE */
-                          },
+            Row(
                 modifier = Modifier
-                    .size(48.dp)
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                horizontalArrangement = Arrangement.End
+
             ) {
-                Icon(
-                    imageVector = Icons.Default.Edit,
-                    contentDescription = "Edit Profile",
-                    tint =  Color(0xFF309CA9)
-                )
-            }
-        }
-
-        Image(
-            painter = painterResource(id = R.drawable.apa_profile_picture), //make dynamic
-            contentDescription = "Profile Picture",
-            modifier = Modifier
-                .padding(top = 5.dp)
-                .size(200.dp)
-                .shadow(5.dp, CircleShape)
-                .clip(CircleShape),
-            contentScale = ContentScale.Crop
-        )
-        Box(
-            modifier = Modifier
-                .padding(top = 20.dp)
-                .clip(RoundedCornerShape(10.dp))
-                .background(Color(0xFF309CA9))
-                .size(800.dp)
-        )
-        {
-            if (userName != null) {
-                Text(
-                    text = userName,
-                    style = MaterialTheme.typography.headlineMedium,
-                    color = Color(0xFFFBFFDC),
-                    fontSize = 38.sp,
+                IconButton(
+                    onClick = {},
                     modifier = Modifier
-                        .padding(top = 25.dp)
-                        .align(Alignment.TopCenter)
-
-                )
+                        .size(48.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = "Edit Profile",
+                        tint = Color(0xFF309CA9)
+                    )
+                }
             }
 
-
-
-            HorizontalDivider(
+            Image(
+                painter = painterResource(id = R.drawable.apa_profile_picture),
+                contentDescription = "Profile Picture",
                 modifier = Modifier
-                    .width(350.dp)
-                    .padding(start = 20.dp,end = 20.dp, top = 5.dp)
-                    .padding(vertical = 70.dp),
-                thickness = 1.dp,
-                color = Color.White
+                    .padding(top = 5.dp)
+                    .size(200.dp)
+                    .shadow(5.dp, CircleShape)
+                    .clip(CircleShape),
+                contentScale = ContentScale.Crop
             )
-
-            if (spotifyId != null){
-                Text(
-                    text = spotifyId,
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontSize = 19.sp,
-                    color = Color(0xFFFBFFDC),
-                    modifier = Modifier
-                        .padding(top = 85.dp)
-                        .align(Alignment.TopCenter)
-
-                )
-            }
-
-            Button(
-                onClick = {
-                    showDialog = true
-                          },
+            Box(
                 modifier = Modifier
-                    .padding(16.dp)
-                    .align(Alignment.BottomEnd)
-                    .width(1000.dp)
-                    .height(50.dp),
+                    .padding(top = 20.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(Color(0xFF309CA9))
+                    .size(800.dp)
+            )
+            {
+                if (username != null) {
+                    Text(
+                        text = username,
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = Color(0xFFFBFFDC),
+                        fontSize = 38.sp,
+                        modifier = Modifier
+                            .padding(top = 25.dp)
+                            .align(Alignment.TopCenter)
 
-                colors = ButtonDefaults.buttonColors(Color(0xFFFBFFDC)) //
+                    )
+                }
 
-            ) {
-                Text(
-                    text = "Logout",
-                    color = Color(0xFF00889A),
-                    fontSize = 18.sp,
-
+                HorizontalDivider(
+                    modifier = Modifier
+                        .width(350.dp)
+                        .padding(start = 20.dp, end = 20.dp, top = 5.dp)
+                        .padding(vertical = 70.dp),
+                    thickness = 1.dp,
+                    color = Color.White
                 )
 
+                if (spotifyID != null) {
+                    Text(
+                        text = spotifyID,
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontSize = 19.sp,
+                        color = Color(0xFFFBFFDC),
+                        modifier = Modifier
+                            .padding(top = 85.dp)
+                            .align(Alignment.TopCenter)
+                    )
+                }
 
-            }
-            if (showDialog) {
-                LogoutDialog(signOut)
-            }
+                Button(
+                    onClick = {
+                        showDialog = true
+                    },
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .align(Alignment.BottomEnd)
+                        .width(1000.dp)
+                        .height(50.dp),
 
-            }
+                    colors = ButtonDefaults.buttonColors(Color(0xFFFBFFDC)) //
 
+                ) {
+                    Text(
+                        text = "Logout",
+                        color = Color(0xFF00889A),
+                        fontSize = 18.sp,
+
+                        )
+                }
+                if (showDialog) {
+                    LogoutDialog(onNavigateToRoute)
+                }
+            }
         }
-
     }
-
-/*
-@RequiresApi(Build.VERSION_CODES.O)
-@Preview(showBackground = true)
-@Composable
-fun ProfileScreenPreview() {
-    profileScreen()
-}*/
+}
